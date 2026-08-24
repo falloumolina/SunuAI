@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunuAI 🇸🇳</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #F0F8FF; text-align: center; }
+        h1 { color: #009A49; }
+        input, button { padding: 12px; width: 90%; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+        button { background: #009A49; color: white; font-weight: bold; border: none; }
+        #result img { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🇸🇳 SunuAI</h1>
+    <p>Générateur d'images Gratuit et Rapide</p>
+    
+    <input type="text" id="prompt" placeholder="Ex: Un lion sous un baobab">
+    <br>
+    <button onclick="generer()">Générer</button>
+    
+    <div id="result"></div>
+
+<script>
+function generer() {
+    let prompt = document.getElementById("prompt").value;
+    let result = document.getElementById("result");
+    
+    if(prompt == "") { alert("Écris quelque chose d'abord !"); return; }
+    
+    result.innerHTML = "<p>⏳ Génération en cours... 5-10s</p>";
+    
+    // LIEN MAGIQUE QUI MARCHE TOUJOURS
+    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ", photorealistic, high quality")}`;
+    
+    result.innerHTML = `<img src="${imgUrl}" onload="this.nextElementSibling.innerText='Voici ton image pour: ${prompt}'">
+                        <p>⏳ Génération en cours...</p>`;
+}
+</script>
+</body>
+      </html>
