@@ -7,95 +7,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="sidebar">
-        <h3>HISTORIQUE</h3>
-        <div id="history"></div>
+    <div class="header">
+        <button class="menu-btn">☰</button>
+        <button class="refresh-btn">⟳</button>
     </div>
 
-    <div class="main">
-        <div class="container">
-            <h1>Générateur d'images</h1>
-            
-            <div class="controls">
-                <input type="text" id="prompt" placeholder="Décris l'image que tu veux générer...">
-                
-                <div class="options">
-                    <select id="style">
-                        <option value="photorealistic">Réaliste</option>
-                        <option value="anime style">Anime</option>
-                        <option value="oil painting">Peinture</option>
-                        <option value="3d render">3D</option>
-                    </select>
-                    <select id="format">
-                        <option value="1024x1024">Carré 1:1</option>
-                        <option value="1024x1536">Portrait 2:3</option>
-                        <option value="1536x1024">Paysage 3:2</option>
-                    </select>
-                    <select id="resolution">
-                        <option value="">Résolution standard</option>
-                        <option value="high detail">Haute résolution</option>
-                    </select>
-                    <input type="text" id="negatif" class="negatif" placeholder="À exclure: texte, flou, basse qualité">
-                </div>
-
-                <div class="buttons">
-                    <button onclick="generer()">Générer</button>
-                    <button class="secondary" onclick="telecharger()">Télécharger</button>
-                </div>
-            </div>
-
-            <div class="result-zone">
-                <div id="result"><p style="color:#9CA3AF">L'image apparaîtra ici</p></div>
+    <div class="chat-area">
+        <div id="result">
+            <div class="empty-state">
+                <h1>SunuAI</h1>
+                <p>Que veux-tu créer aujourd'hui?</p>
             </div>
         </div>
     </div>
 
+    <div class="suggestions">
+        <button onclick="setPrompt('Créer une image')"><span>🖼️</span> Créer une image</button>
+        <button onclick="setPrompt('Écrire ou modifier')"><span>✏️</span> Écrire ou modifier</button>
+    </div>
+
+    <div class="input-bar">
+        <button class="plus-btn">+</button>
+        <input type="file" id="imageUpload" accept="image/*" style="display:none">
+        <input type="text" id="prompt" placeholder="Demander à SunuAI">
+        <button class="mic-btn">🎤</button>
+        <button class="send-btn" onclick="generer()">➤</button>
+    </div>
+
 <script>
 let lastImageUrl = "";
+let uploadedImage = null;
+
+document.querySelector('.plus-btn').onclick = () => document.getElementById('imageUpload').click();
+
+document.getElementById('imageUpload').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(event){
+            uploadedImage = event.target.result;
+            document.getElementById('prompt').placeholder = "Image ajoutée. Décris la modification...";
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+function setPrompt(text){
+    document.getElementById('prompt').value = text + ": ";
+    document.getElementById('prompt').focus();
+}
 
 function generer() {
     let prompt = document.getElementById("prompt").value;
-    let style = document.getElementById("style").value;
-    let format = document.getElementById("format").value;
-    let resolution = document.getElementById("resolution").value;
-    let negatif = document.getElementById("negatif").value;
     let result = document.getElementById("result");
-    
-    if(prompt == "") { alert("Écris une description d'abord"); return; }
-    
-    result.innerHTML = `<div class="loader"></div>`;
-    
-    let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
-    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+
+    if(prompt == "") { return; }
+
+    result.innerHTML = `<div class="loader"></div><p>Génération en cours...</p>`;
+
+    let fullPrompt = prompt + ", photorealistic, high quality";
+    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=1024&height=1024`;
     lastImageUrl = imgUrl;
 
     let img = new Image();
     img.src = imgUrl;
     img.onload = () => {
         result.innerHTML = `<img src="${imgUrl}">`;
-        ajouterHistorique(prompt, imgUrl);
-    }
-    img.onerror = () => {
-        result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
     }
 }
 
-function ajouterHistorique(prompt, url) {
-    let history = document.getElementById("history");
-    let item = document.createElement('div');
-    item.className = 'history-item';
-    item.onclick = () => { document.getElementById('result').innerHTML = `<img src="${url}">`; }
-    item.innerHTML = `<img src="${url}"><div>${prompt.substring(0,40)}...</div>`;
-    history.prepend(item);
-}
-
-function telecharger() {
-    if(!lastImageUrl) return;
-    let a = document.createElement('a');
-    a.href = lastImageUrl;
-    a.download = 'sunuai-image.png';
-    a.click();
-}
+document.getElementById('prompt').addEventListener("keypress", function(e) {
+    if (e.key === "Enter") generer();
+});
 </script>
 </body>
-                            </html>
+            </html>
