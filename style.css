@@ -1,72 +1,137 @@
-body {
-    padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #F0F8FF 0%, #E6F3FF 100%);
-    text-align: center;
-    margin: 0;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; 
+    background: #F5F7FA; 
+    color: #1F2937;
+    display: flex;
+    height: 100vh;
 }
 
-h1 {
-    font-size: 32px;
-    margin-top: 0;
-    color: #009A49; /* Vert Sénégal */
-    font-weight: 800;
+/* PANNEAU LATERAL HISTORIQUE */
+.sidebar {
+    width: 260px;
+    background: white;
+    border-right: 1px solid #E5E7EB;
+    padding: 20px;
+    overflow-y: auto;
 }
-
-p {
-    color: rgb(107, 114, 128);
-    font-size: 16px;
-    margin-bottom: 20px;
-}
-
-input {
-    padding: 14px;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 12px;
-    border: 2px solid #009A49;
-    font-size: 16px;
-    outline: none;
-    transition: 0.3s;
-}
-input:focus {
-    border-color: #FCD116; /* Jaune Sénégal */
-    box-shadow: 0 0 0 3px rgba(252, 209, 22, 0.2);
-}
-
-button {
-    padding: 14px 30px;
-    width: 90%;
-    max-width: 500px;
-    margin: 15px 0;
-    border-radius: 12px;
-    border: none;
-    background: #009A49; /* Vert */
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
+.sidebar h3 { font-size: 14px; margin-bottom: 15px; color: #6B7280; font-weight: 600; }
+.history-item {
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
+    margin-bottom: 8px;
+    font-size: 13px;
+    border: 1px solid #E5E7EB;
     transition: 0.2s;
 }
-button:hover {
-    background: #007a3a;
-    transform: scale(1.02);
+.history-item:hover { background: #F3F4F6; }
+.history-item img { width: 100%; border-radius: 6px; margin-bottom: 5px; }
+
+/* ZONE PRINCIPALE */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+.container {
+    width: 100%;
+    max-width: 800px;
+}
+h1 { 
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-#result img {
-    max-width: 100%;
-    border-radius: 16px;
-    margin-top: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    border: 3px solid white;
-}
-
-.card {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 24px;
+/* CONTROLES */
+.controls {
     background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 20px;
+}
+#prompt { 
+    padding: 14px; 
+    width: 100%; 
+    border-radius: 8px; 
+    border: 1px solid #D1D5DB; 
+    font-size: 16px; 
+    outline: none;
+    margin-bottom: 12px;
+}
+#prompt:focus { border-color: #3B82F6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+select, .negatif {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+    font-size: 14px;
+    width: 100%;
+    background: white;
+}
+.negatif { grid-column: 1 / 4; }
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+button { 
+    background: #111827; 
+    color: white; 
+    font-weight: 600; 
     border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-		}
+    padding: 12px 20px; 
+    border-radius: 8px; 
+    font-size: 15px;
+    cursor: pointer;
+    flex: 1;
+    transition: 0.2s;
+}
+button:hover { background: #000; transform: translateY(-1px); }
+button.secondary { background: #F3F4F6; color: #111827; }
+button.secondary:hover { background: #E5E7EB; }
+
+/* ZONE IMAGE */
+.result-zone {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+#result img { 
+    max-width: 100%; 
+    max-height: 70vh;
+    border-radius: 8px; 
+}
+.loader {
+    border: 3px solid #F3F4F6;
+    border-top: 3px solid #111827;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* MOBILE */
+@media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { padding: 15px; }
+    .options { grid-template-columns: 1fr; }
+				   }
