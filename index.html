@@ -3,105 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SunuAI 🇸🇳</title>
+    <title>SunuAI</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; 
-            padding: 20px; 
-            background: linear-gradient(135deg, #E6F3FF 0%, #F0F8FF 100%); 
-            text-align: center; 
-            margin: 0;
-            min-height: 100vh;
+            background: #F5F7FA; 
+            color: #1F2937;
+            display: flex;
+            height: 100vh;
+        }
+        /* PANNEAU LATERAL HISTORIQUE */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #E5E7EB;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar h3 { font-size: 14px; margin-bottom: 15px; color: #6B7280; }
+        .history-item {
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            font-size: 13px;
+            border: 1px solid #E5E7EB;
+        }
+        .history-item:hover { background: #F3F4F6; }
+        .history-item img { width: 100%; border-radius: 6px; margin-bottom: 5px; }
+
+        /* ZONE PRINCIPALE */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+        h1 { 
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* CONTROLES */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            margin-bottom: 20px;
+        }
+        #prompt { 
+            padding: 14px; 
+            width: 100%; 
+            border-radius: 8px; 
+            border: 1px solid #D1D5DB; 
+            font-size: 16px; 
+            outline: none;
+            margin-bottom: 12px;
+        }
+        #prompt:focus { border-color: #3B82F6; }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        select, .negatif {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            font-size: 14px;
+            width: 100%;
+        }
+        .negatif { grid-column: 1 / 4; }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button { 
+            background: #111827; 
+            color: white; 
+            font-weight: 600; 
+            border: none;
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            font-size: 15px;
+            cursor: pointer;
+            flex: 1;
+            transition: 0.2s;
+        }
+        button:hover { background: #000; }
+        button.secondary { background: #F3F4F6; color: #111827; }
+        button.secondary:hover { background: #E5E7EB; }
+
+        /* ZONE IMAGE */
+        .result-zone {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            min-height: 500px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: white;
-            padding: 30px 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0, 154, 73, 0.12);
-        }
-        h1 { 
-            color: #009A49; /* Vert Sénégal */
-            font-size: 36px;
-            margin: 0 0 8px 0;
-            font-weight: 800;
-        }
-        p {
-            color: #6B7280;
-            margin-bottom: 25px;
-            font-size: 16px;
-        }
-        input { 
-            padding: 14px; 
-            width: 100%; 
-            margin: 10px 0; 
-            border-radius: 12px; 
-            border: 2px solid #E5E7EB; 
-            font-size: 16px; 
-            outline: none;
-            transition: 0.3s;
-        }
-        input:focus {
-            border-color: #009A49;
-            box-shadow: 0 0 0 3px rgba(0, 154, 73, 0.1);
-        }
-        button { 
-            background: #009A49; 
-            color: white; 
-            font-weight: bold; 
-            border: none;
-            padding: 15px; 
-            width: 100%; 
-            margin: 15px 0; 
-            border-radius: 12px; 
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { 
-            background: #007a3a;
-            transform: translateY(-2px);
+            position: relative;
         }
         #result img { 
             max-width: 100%; 
-            border-radius: 16px; 
-            margin-top: 20px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            border: 3px solid white;
+            max-height: 70vh;
+            border-radius: 8px; 
         }
+        .loader {
+            border: 3px solid #F3F4F6;
+            border-top: 3px solid #111827;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🇸🇳 SunuAI</h1>
-        <p>Générateur d'images Gratuit et Rapide</p>
-        
-        <input type="text" id="prompt" placeholder="Ex: Un lion sous un baobab">
-        <br>
-        <button onclick="generer()">Générer</button>
-        
-        <div id="result"></div>
+    <div class="sidebar">
+        <h3>HISTORIQUE</h3>
+        <div id="history"></div>
+    </div>
+
+    <div class="main">
+        <div class="container">
+            <h1>Générateur d'images</h1>
+            
+            <div class="controls">
+                <input type="text" id="prompt" placeholder="Décris l'image que tu veux générer...">
+                
+                <div class="options">
+                    <select id="style">
+                        <option value="photorealistic">Réaliste</option>
+                        <option value="anime style">Anime</option>
+                        <option value="oil painting">Peinture</option>
+                        <option value="3d render">3D</option>
+                    </select>
+                    <select id="format">
+                        <option value="1024x1024">Carré 1:1</option>
+                        <option value="1024x1536">Portrait 2:3</option>
+                        <option value="1536x1024">Paysage 3:2</option>
+                    </select>
+                    <select id="resolution">
+                        <option value="">Résolution standard</option>
+                        <option value="high detail">Haute résolution</option>
+                    </select>
+                    <input type="text" id="negatif" class="negatif" placeholder="À exclure: texte, flou, basse qualité">
+                </div>
+
+                <div class="buttons">
+                    <button onclick="generer()">Générer</button>
+                    <button class="secondary" onclick="telecharger()">Télécharger</button>
+                </div>
+            </div>
+
+            <div class="result-zone">
+                <div id="result"><p style="color:#9CA3AF">L'image apparaîtra ici</p></div>
+            </div>
+        </div>
     </div>
 
 <script>
+let lastImageUrl = "";
+
 function generer() {
     let prompt = document.getElementById("prompt").value;
+    let style = document.getElementById("style").value;
+    let format = document.getElementById("format").value;
+    let resolution = document.getElementById("resolution").value;
+    let negatif = document.getElementById("negatif").value;
     let result = document.getElementById("result");
     
-    if(prompt == "") { alert("Écris quelque chose d'abord !"); return; }
+    if(prompt == "") { alert("Écris une description d'abord"); return; }
     
-    result.innerHTML = "<p>⏳ Génération en cours... 5-10s</p>";
+    result.innerHTML = `<div class="loader"></div>`;
     
-    // LIEN MAGIQUE QUI MARCHE TOUJOURS
-    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ", photorealistic, high quality")}`;
-    
-    result.innerHTML = `<img src="${imgUrl}" onload="this.nextElementSibling.innerText='Voici ton image pour: ${prompt}'">
-                        <p>⏳ Génération en cours...</p>`;
+    let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
+    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+    lastImageUrl = imgUrl;
+
+    let img = new Image();
+    img.src = imgUrl;
+    img.onload = () => {
+        result.innerHTML = `<img src="${imgUrl}">`;
+        ajouterHistorique(prompt, imgUrl);
+    }
+}
+
+function ajouterHistorique(prompt, url) {
+    let history = document.getElementById("history");
+    history.innerHTML = `<div class="history-item" onclick="document.getElementById('result').innerHTML='<img src=${url}>'"><img src="${url}"><div>${prompt.substring(0,40)}...</div></div>` + history.innerHTML;
+}
+
+function telecharger() {
+    if(!lastImageUrl) return;
+    let a = document.createElement('a');
+    a.href = lastImageUrl;
+    a.download = 'sunuai-image.png';
+    a.click();
 }
 </script>
 </body>
