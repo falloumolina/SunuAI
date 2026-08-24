@@ -51,6 +51,12 @@
                 <input type="text" id="prompt" data-i18n-placeholder="prompt">
 
                 <div class="options">
+                    <!-- NOUVEAU TOGGLE ICI -->
+                    <select id="mode">
+                        <option value="image" data-i18n="modeImage">Image</option>
+                        <option value="video" data-i18n="modeVideo">Vidéo</option>
+                    </select>
+
                     <select id="style">
                         <option value="photorealistic" data-i18n="realistic">Réaliste</option>
                         <option value="anime style" data-i18n="anime">Anime</option>
@@ -83,40 +89,44 @@
 
 <script>
 let lastImageUrl = "";
+let lastMode = "image";
 
 // TRADUCTIONS
 const translations = {
     fr: {
         title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité",
-        darkMode: "Mode sombre", language: "Langue", history: "HISTORIQUE", appTitle: "Générateur d'images",
-        prompt: "Décris l'image que tu veux générer...", negative: "À exclure: texte, flou, basse qualité",
+        darkMode: "Mode sombre", language: "Langue", history: "HISTORIQUE", appTitle: "Générateur",
+        prompt: "Décris l'image ou vidéo que tu veux générer...", negative: "À exclure: texte, flou, basse qualité",
         realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D",
         stdRes: "Résolution standard", hdRes: "Haute résolution",
-        generate: "Générer", download: "Télécharger", resultHere: "L'image apparaîtra ici",
+        generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici",
         generating: "Génération en cours...", emptyAlert: "Écris une description d'abord",
-        aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI, une application de génération d'images conçue pour transformer vos idées en créations visuelles.</p><p><b>Imaginez. Décrivez. SunuAI crée.</b></p>`,
+        modeImage: "Image", modeVideo: "Vidéo",
+        aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI, une application de génération d'images et vidéos conçue pour transformer vos idées en créations visuelles.</p><p><b>Imaginez. Décrivez. SunuAI crée.</b></p>`,
         privacyText: `<h2>Politique de confidentialité</h2><p><i>Dernière mise à jour : 24 août 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
     },
     en: {
         title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy",
-        darkMode: "Dark mode", language: "Language", history: "HISTORY", appTitle: "Image Generator",
-        prompt: "Describe the image you want to generate...", negative: "Exclude: text, blur, low quality",
+        darkMode: "Dark mode", language: "Language", history: "HISTORY", appTitle: "Generator",
+        prompt: "Describe the image or video you want to generate...", negative: "Exclude: text, blur, low quality",
         realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D",
         stdRes: "Standard resolution", hdRes: "High resolution",
-        generate: "Generate", download: "Download", resultHere: "Image will appear here",
+        generate: "Generate", download: "Download", resultHere: "Result will appear here",
         generating: "Generating...", emptyAlert: "Write a description first",
-        aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI, an image generation app.</p><p><b>Imagine. Describe. SunuAI creates.</b></p>`,
+        modeImage: "Image", modeVideo: "Video",
+        aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI, an image and video generation app.</p><p><b>Imagine. Describe. SunuAI creates.</b></p>`,
         privacyText: `<h2>Privacy Policy</h2><p><i>Last updated: August 24, 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
     },
     wo: {
         title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité",
-        darkMode: "Lëndëm", language: "Làkk", history: "TARIixa", appTitle: "Soskat Nataal",
-        prompt: "Waxal nataal bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon",
+        darkMode: "Lëndëm", language: "Làkk", history: "TARIixa", appTitle: "Soskat",
+        prompt: "Waxal nataal wala vidéo bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon",
         realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D",
         stdRes: "Qualité bi", hdRes: "Qualité kawe",
-        generate: "Sossal", download: "Jox", resultHere: "Nataal bi dina feeñ fii",
+        generate: "Sossal", download: "Jox", resultHere: "Résultat bi dina feeñ fii",
         generating: "Dinañu ko defar...", emptyAlert: "Binde bu baax bi",
-        aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal yi ci AI.</p><p><b>Xalaat. Wax. SunuAI def.</b></p>`,
+        modeImage: "Nataal", modeVideo: "Vidéo",
+        aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal ak vidéo yi ci AI.</p><p><b>Xalaat. Wax. SunuAI def.</b></p>`,
         privacyText: `<h2>Politique de confidentialité</h2><p><i>Yeesal na: 24 août 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
     }
 };
@@ -158,10 +168,11 @@ langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// TA FONCTION QUI MARCHE BIEN
+// GENERATION IMAGE + VIDEO
 function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
+    let mode = document.getElementById("mode").value;
     let style = document.getElementById("style").value;
     let format = document.getElementById("format").value;
     let resolution = document.getElementById("resolution").value;
@@ -170,20 +181,27 @@ function generer() {
 
     if(prompt == "") { alert(translations[lang].emptyAlert); return; }
 
+    lastMode = mode;
     result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
 
     let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
-    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
-    lastImageUrl = imgUrl;
+    let domain = mode === "video"? "video" : "image";
+    let mediaUrl = `https://${domain}.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+    lastImageUrl = mediaUrl;
 
-    let img = new Image();
-    img.src = imgUrl;
-    img.onload = () => {
-        result.innerHTML = `<img src="${imgUrl}">`;
-        ajouterHistorique(prompt, imgUrl);
-    }
-    img.onerror = () => {
-        result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
+    if(mode === "video"){
+        result.innerHTML = `<video src="${mediaUrl}" controls autoplay loop style="max-width:100%; border-radius:8px;"></video>`;
+        ajouterHistorique(prompt + " [VIDÉO]", mediaUrl);
+    } else {
+        let img = new Image();
+        img.src = mediaUrl;
+        img.onload = () => {
+            result.innerHTML = `<img src="${mediaUrl}">`;
+            ajouterHistorique(prompt, mediaUrl);
+        }
+        img.onerror = () => {
+            result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
+        }
     }
 }
 
@@ -191,8 +209,14 @@ function ajouterHistorique(prompt, url) {
     let history = document.getElementById("history");
     let item = document.createElement('div');
     item.className = 'history-item';
-    item.onclick = () => { document.getElementById('result').innerHTML = `<img src="${url}">`; }
-    item.innerHTML = `<img src="${url}"><div>${prompt.substring(0,40)}...</div>`;
+    item.onclick = () => {
+        if(url.includes('video.pollinations')) {
+            document.getElementById('result').innerHTML = `<video src="${url}" controls autoplay loop style="max-width:100%; border-radius:8px;"></video>`;
+        } else {
+            document.getElementById('result').innerHTML = `<img src="${url}">`;
+        }
+    }
+    item.innerHTML = `<div style="width:50px;height:50px;background:var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">${url.includes('video')?'VID':'IMG'}</div><div>${prompt.substring(0,40)}...</div>`;
     history.prepend(item);
 }
 
@@ -200,11 +224,11 @@ function telecharger() {
     if(!lastImageUrl) return;
     let a = document.createElement('a');
     a.href = lastImageUrl;
-    a.download = 'sunuai-image.png';
+    a.download = lastMode === "video"? 'sunuai-video.mp4' : 'sunuai-image.png';
     a.click();
 }
 
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-                    </html>
+            </html>
