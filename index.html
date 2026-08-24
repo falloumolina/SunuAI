@@ -1,137 +1,101 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; 
-    background: #F5F7FA; 
-    color: #1F2937;
-    display: flex;
-    height: 100vh;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunuAI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h3>HISTORIQUE</h3>
+        <div id="history"></div>
+    </div>
+
+    <div class="main">
+        <div class="container">
+            <h1>Générateur d'images</h1>
+            
+            <div class="controls">
+                <input type="text" id="prompt" placeholder="Décris l'image que tu veux générer...">
+                
+                <div class="options">
+                    <select id="style">
+                        <option value="photorealistic">Réaliste</option>
+                        <option value="anime style">Anime</option>
+                        <option value="oil painting">Peinture</option>
+                        <option value="3d render">3D</option>
+                    </select>
+                    <select id="format">
+                        <option value="1024x1024">Carré 1:1</option>
+                        <option value="1024x1536">Portrait 2:3</option>
+                        <option value="1536x1024">Paysage 3:2</option>
+                    </select>
+                    <select id="resolution">
+                        <option value="">Résolution standard</option>
+                        <option value="high detail">Haute résolution</option>
+                    </select>
+                    <input type="text" id="negatif" class="negatif" placeholder="À exclure: texte, flou, basse qualité">
+                </div>
+
+                <div class="buttons">
+                    <button onclick="generer()">Générer</button>
+                    <button class="secondary" onclick="telecharger()">Télécharger</button>
+                </div>
+            </div>
+
+            <div class="result-zone">
+                <div id="result"><p style="color:#9CA3AF">L'image apparaîtra ici</p></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+let lastImageUrl = "";
+
+function generer() {
+    let prompt = document.getElementById("prompt").value;
+    let style = document.getElementById("style").value;
+    let format = document.getElementById("format").value;
+    let resolution = document.getElementById("resolution").value;
+    let negatif = document.getElementById("negatif").value;
+    let result = document.getElementById("result");
+    
+    if(prompt == "") { alert("Écris une description d'abord"); return; }
+    
+    result.innerHTML = `<div class="loader"></div>`;
+    
+    let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
+    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+    lastImageUrl = imgUrl;
+
+    let img = new Image();
+    img.src = imgUrl;
+    img.onload = () => {
+        result.innerHTML = `<img src="${imgUrl}">`;
+        ajouterHistorique(prompt, imgUrl);
+    }
+    img.onerror = () => {
+        result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
+    }
 }
 
-/* PANNEAU LATERAL HISTORIQUE */
-.sidebar {
-    width: 260px;
-    background: white;
-    border-right: 1px solid #E5E7EB;
-    padding: 20px;
-    overflow-y: auto;
-}
-.sidebar h3 { font-size: 14px; margin-bottom: 15px; color: #6B7280; font-weight: 600; }
-.history-item {
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 8px;
-    font-size: 13px;
-    border: 1px solid #E5E7EB;
-    transition: 0.2s;
-}
-.history-item:hover { background: #F3F4F6; }
-.history-item img { width: 100%; border-radius: 6px; margin-bottom: 5px; }
-
-/* ZONE PRINCIPALE */
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-}
-.container {
-    width: 100%;
-    max-width: 800px;
-}
-h1 { 
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-align: center;
+function ajouterHistorique(prompt, url) {
+    let history = document.getElementById("history");
+    let item = document.createElement('div');
+    item.className = 'history-item';
+    item.onclick = () => { document.getElementById('result').innerHTML = `<img src="${url}">`; }
+    item.innerHTML = `<img src="${url}"><div>${prompt.substring(0,40)}...</div>`;
+    history.prepend(item);
 }
 
-/* CONTROLES */
-.controls {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    margin-bottom: 20px;
+function telecharger() {
+    if(!lastImageUrl) return;
+    let a = document.createElement('a');
+    a.href = lastImageUrl;
+    a.download = 'sunuai-image.png';
+    a.click();
 }
-#prompt { 
-    padding: 14px; 
-    width: 100%; 
-    border-radius: 8px; 
-    border: 1px solid #D1D5DB; 
-    font-size: 16px; 
-    outline: none;
-    margin-bottom: 12px;
-}
-#prompt:focus { border-color: #3B82F6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-
-.options {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-select, .negatif {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #D1D5DB;
-    font-size: 14px;
-    width: 100%;
-    background: white;
-}
-.negatif { grid-column: 1 / 4; }
-
-.buttons {
-    display: flex;
-    gap: 10px;
-}
-button { 
-    background: #111827; 
-    color: white; 
-    font-weight: 600; 
-    border: none;
-    padding: 12px 20px; 
-    border-radius: 8px; 
-    font-size: 15px;
-    cursor: pointer;
-    flex: 1;
-    transition: 0.2s;
-}
-button:hover { background: #000; transform: translateY(-1px); }
-button.secondary { background: #F3F4F6; color: #111827; }
-button.secondary:hover { background: #E5E7EB; }
-
-/* ZONE IMAGE */
-.result-zone {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    min-height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-#result img { 
-    max-width: 100%; 
-    max-height: 70vh;
-    border-radius: 8px; 
-}
-.loader {
-    border: 3px solid #F3F4F6;
-    border-top: 3px solid #111827;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* MOBILE */
-@media (max-width: 900px) {
-    .sidebar { display: none; }
-    .main { padding: 15px; }
-    .options { grid-template-columns: 1fr; }
-}
+</script>
+</body>
+                            </html>
