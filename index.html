@@ -8,77 +8,191 @@
 </head>
 <body>
     <div class="header">
-        <button class="menu-btn">☰</button>
-        <button class="refresh-btn">⟳</button>
+        <button class="menu-btn" onclick="toggleMenu()">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        <button class="refresh-btn" onclick="resetChat()">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3.26-6.37L20 3v4h-4"/></svg>
+        </button>
     </div>
+
+    <!-- MENU LATERAL -->
+    <div id="sideMenu" class="side-menu">
+        <button onclick="closeMenu()">X</button>
+        <h3 data-i18n="title">SunuAI</h3>
+        <a href="#" onclick="resetChat(); closeMenu()" data-i18n="newChat">Nouvelle discussion</a>
+        <a href="#" onclick="showAbout(); closeMenu()" data-i18n="about">À propos</a>
+        <a href="#" onclick="showPrivacy(); closeMenu()" data-i18n="privacy">Politique de confidentialité</a>
+
+        <div class="settings-item">
+            <span data-i18n="darkMode">Mode sombre</span>
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="settings-item">
+            <span data-i18n="language">Langue</span>
+            <select id="langSelect">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="wo">Wolof</option>
+            </select>
+        </div>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
     <div class="chat-area">
         <div id="result">
             <div class="empty-state">
                 <h1>SunuAI</h1>
-                <p>Que veux-tu créer aujourd'hui?</p>
+                <p data-i18n="welcome">Que veux-tu créer aujourd'hui?</p>
             </div>
         </div>
     </div>
 
     <div class="suggestions">
-        <button onclick="setPrompt('Créer une image')"><span>🖼️</span> Créer une image</button>
-        <button onclick="setPrompt('Écrire ou modifier')"><span>✏️</span> Écrire ou modifier</button>
+        <button onclick="setPrompt('Créer une image')">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 0-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            <span data-i18n="createImg">Créer une image</span>
+        </button>
+        <button onclick="setPrompt('Écrire ou modifier')">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            <span data-i18n="writeEdit">Écrire ou modifier</span>
+        </button>
     </div>
 
     <div class="input-bar">
-        <button class="plus-btn">+</button>
+        <button class="plus-btn" onclick="document.getElementById('imageUpload').click()">+</button>
         <input type="file" id="imageUpload" accept="image/*" style="display:none">
-        <input type="text" id="prompt" placeholder="Demander à SunuAI">
-        <button class="mic-btn">🎤</button>
-        <button class="send-btn" onclick="generer()">➤</button>
+        <input type="text" id="prompt" data-i18n-placeholder="prompt">
+        <button class="mic-btn" onclick="startVoice()">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <button class="send-btn" onclick="generer()">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
     </div>
 
 <script>
 let lastImageUrl = "";
 let uploadedImage = null;
 
-document.querySelector('.plus-btn').onclick = () => document.getElementById('imageUpload').click();
+// TRADUCTIONS
+const translations = {
+    fr: {
+        title: "SunuAI", newChat: "Nouvelle discussion", about: "À propos", privacy: "Politique de confidentialité",
+        darkMode: "Mode sombre", language: "Langue", welcome: "Que veux-tu créer aujourd'hui?",
+        createImg: "Créer une image", writeEdit: "Écrire ou modifier",
+        prompt: "Créer une image:", generating: "Génération en cours...", emptyAlert: "Écris une description d'abord",
+        aboutText: `<h2>À propos de SunuAI</h2>
+        <p>Bienvenue sur SunuAI, une application de génération d'images conçue pour transformer vos idées en créations visuelles.</p>
+        <p>Décrivez simplement l'image que vous imaginez, et SunuAI vous aide à lui donner vie grâce à l'intelligence artificielle.</p>
+        <p>Notre objectif est de rendre la création d'images simple, rapide et accessible à tous.</p>
+        <p>Que vous soyez créateur de contenu, étudiant, entrepreneur, artiste ou simplement curieux, SunuAI vous permet d'explorer votre imagination et de créer des visuels à partir de simples mots.</p>
+        <p><b>Imaginez. Décrivez. SunuAI crée.</b></p>
+        <p>Merci d'utiliser SunuAI et de participer à notre aventure.</p>`,
+        privacyText: `<h2>Politique de confidentialité</h2><p><i>Dernière mise à jour : 24 août 2026</i></p>
+        <p>Cette Politique de confidentialité explique comment SunuAI traite les informations lorsque vous utilisez notre application de génération d'images.</p>
+        <h3>1. Informations collectées</h3><p>Les descriptions ou prompts, les images importées, les images générées, et certaines informations techniques.</p>
+        <h3>2. Utilisation des informations</h3><p>Générer les images, assurer le fonctionnement, améliorer le service, prévenir les abus.</p>
+        <h3>3. Images et créations</h3><p>Les prompts et images peuvent être transmis aux services techniques nécessaires à la génération.</p>
+        <h3>4. Partage des données</h3><p>SunuAI ne vend pas vos informations personnelles.</p>
+        <h3>5. Sécurité</h3><p>Nous mettons en place des mesures raisonnables pour protéger vos informations.</p>
+        <h3>6. Conservation</h3><p>Nous conservons les informations uniquement pendant la durée nécessaire.</p>
+        <h3>7. Contact</h3><p>faluzodiop@gmail.com</p>`
+    },
+    en: {
+        title: "SunuAI", newChat: "New chat", about: "About", privacy: "Privacy Policy",
+        darkMode: "Dark mode", language: "Language", welcome: "What do you want to create today?",
+        createImg: "Create an image", writeEdit: "Write or edit",
+        prompt: "Create an image:", generating: "Generating...", emptyAlert: "Write a description first",
+        aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI, an image generation app designed to turn your ideas into visual creations.</p><p>Simply describe the image you imagine, and SunuAI brings it to life with artificial intelligence.</p><p><b>Imagine. Describe. SunuAI creates.</b></p>`,
+        privacyText: `<h2>Privacy Policy</h2><p><i>Last updated: August 24, 2026</i></p><p>This Privacy Policy explains how SunuAI processes information when you use our image generation application.</p><h3>1. Information collected</h3><p>Prompts, uploaded images, generated images, and technical info.</p><h3>2. Use of information</h3><p>To generate images, operate the service, improve quality, and prevent abuse.</p><h3>7. Contact</h3><p>faluzodiop@gmail.com</p>`
+    },
+    wo: {
+        title: "SunuAI", newChat: "Dañu waareel bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité",
+        darkMode: "Lëndëm", language: "Làkk", welcome: "Lu nga bëgg a def tey?",
+        createImg: "Sossal nataal", writeEdit: "Binde walla soppi",
+        prompt: "Sossal nataal:", generating: "Dinañu ko defar...", emptyAlert: "Binde bu baax bi",
+        aboutText: `<h2>Ci SunuAI</h2><p>Dalaal ak jàmm ci SunuAI, application bu sossal nataal yi ci AI.</p><p>Waxal rek lu nga bëgg, nu def la ko.</p><p><b>Xalaat. Wax. SunuAI def.</b></p>`,
+        privacyText: `<h2>Politique de confidentialité</h2><p><i>Yeesal na: 24 août 2026</i></p><p>Politique bi wax na nu nu defar sa jëfandikoo.</p><h3>Contact</h3><p>faluzodiop@gmail.com</p>`
+    }
+};
 
+function setLanguage(lang){
+    document.documentElement.lang = lang;
+    localStorage.setItem('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = translations[lang][el.dataset.i18n];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = translations[lang][el.dataset.i18nPlaceholder];
+    });
+    currentLang = lang;
+}
+
+function showAbout(){
+    let lang = localStorage.getItem('lang') || 'fr';
+    document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].aboutText}</div>`;
+}
+function showPrivacy(){
+    let lang = localStorage.getItem('lang') || 'fr';
+    document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].privacyText}</div>`;
+}
+
+// MENU
+function toggleMenu(){ document.getElementById('sideMenu').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+function closeMenu(){ document.getElementById('sideMenu').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+function resetChat(){
+    let lang = localStorage.getItem('lang') || 'fr';
+    document.getElementById('result').innerHTML = `<div class="empty-state"><h1>SunuAI</h1><p>${translations[lang].welcome}</p></div>`;
+    document.getElementById('prompt').value = "";
+}
+
+// DARK MODE
+const darkToggle = document.getElementById('darkModeToggle');
+if(localStorage.getItem('theme') === 'dark'){ document.body.classList.add('dark'); darkToggle.checked = true; }
+darkToggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark')? 'dark' : 'light');
+});
+
+// LANGUE
+const langSelect = document.getElementById('langSelect');
+const savedLang = localStorage.getItem('lang') || 'fr';
+langSelect.value = savedLang;
+setLanguage(savedLang);
+langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
+
+// UPLOAD + VOIX + GENERATION
 document.getElementById('imageUpload').addEventListener('change', function(e){
     const file = e.target.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload = function(event){
-            uploadedImage = event.target.result;
-            document.getElementById('prompt').placeholder = "Image ajoutée. Décris la modification...";
-        }
-        reader.readAsDataURL(file);
-    }
+    if(file){ const reader = new FileReader(); reader.onload = function(event){ uploadedImage = event.target.result; } reader.readAsDataURL(file); }
 });
-
-function setPrompt(text){
-    document.getElementById('prompt').value = text + ": ";
-    document.getElementById('prompt').focus();
+function setPrompt(text){ document.getElementById('prompt').value = text + ": "; document.getElementById('prompt').focus(); }
+let currentLang = 'fr';
+function startVoice(){
+    if('webkitSpeechRecognition' in window){
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = currentLang === 'fr'? 'fr-FR' : currentLang === 'en'? 'en-US' : 'fr-FR';
+        recognition.onresult = (e) => { document.getElementById('prompt').value = e.results[0][0].transcript; }
+        recognition.start();
+    }
 }
-
 function generer() {
+    let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
     let result = document.getElementById("result");
-
-    if(prompt == "") { return; }
-
-    result.innerHTML = `<div class="loader"></div><p>Génération en cours...</p>`;
-
-    let fullPrompt = prompt + ", photorealistic, high quality";
-    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=1024&height=1024`;
-    lastImageUrl = imgUrl;
-
+    if(prompt == "") { alert(translations[lang].emptyAlert); return; }
+    result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
+    let imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ", high quality")}?width=1024&height=1024`;
     let img = new Image();
     img.src = imgUrl;
-    img.onload = () => {
-        result.innerHTML = `<img src="${imgUrl}">`;
-    }
+    img.onload = () => { result.innerHTML = `<img src="${imgUrl}">`; }
 }
-
-document.getElementById('prompt').addEventListener("keypress", function(e) {
-    if (e.key === "Enter") generer();
-});
+document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-            </html>
+    </html>
