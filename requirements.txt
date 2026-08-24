@@ -1,8 +1,0 @@
-gradio
-diffusers
-torch
-transformers
-accelerate
-safetensors
-xformers
-pillow
