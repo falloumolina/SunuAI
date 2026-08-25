@@ -108,7 +108,6 @@ langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// FONCTION PRINCIPALE CORRIGEE POUR GITHUB PAGES
 async function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
@@ -125,7 +124,7 @@ async function generer() {
     result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
 
     if(mode === "text"){
-        await genererTexte(prompt, result, lang); // CORRIGE ICI
+        await genererTexte(prompt, result, lang);
         return;
     }
 
@@ -146,15 +145,14 @@ async function generer() {
     }
 }
 
-// FONCTION TEXTE CORRIGEE POUR GITHUB PAGES - 100% GRATUIT
+// VERSION CORRIGEE SANS MODEL
 async function genererTexte(prompt, result, lang) {
     try {
         const response = await fetch('https://text.pollinations.ai/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                messages: [{ role: "user", content: prompt }],
-                model: "openai-large" // gratuit illimité
+                messages: [{ role: "user", content: prompt }]
             })
         })
 
@@ -183,4 +181,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-            </html>
+    </html>
