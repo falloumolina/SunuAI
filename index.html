@@ -48,6 +48,7 @@
                     <select id="mode">
                         <option value="image" data-i18n="modeImage">Image</option>
                         <option value="video" data-i18n="modeVideo">Vidéo</option>
+                        <option value="text">Texte</option>
                     </select>
 
                     <select id="style">
@@ -85,9 +86,9 @@ let lastImageUrl = "";
 let lastMode = "image";
 
 const translations = {
-    fr: {title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité", darkMode: "Mode sombre", language: "Langue", appTitle: "Générateur", prompt: "Décris l'image ou vidéo que tu veux générer...", negative: "À exclure: texte, flou, basse qualité", realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D", stdRes: "Résolution standard", hdRes: "Haute résolution", generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici", generating: "Génération en cours... 30-60s pour la vidéo", emptyAlert: "Écris une description d'abord", modeImage: "Image", modeVideo: "Vidéo", aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`},
-    en: {title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy", darkMode: "Dark mode", language: "Language", appTitle: "Generator", prompt: "Describe the image or video you want to generate...", negative: "Exclude: text, blur, low quality", realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D", stdRes: "Standard resolution", hdRes: "High resolution", generate: "Generate", download: "Download", resultHere: "Result will appear here", generating: "Generating... 30-60s for video", emptyAlert: "Write a description first", modeImage: "Image", modeVideo: "Video", aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI.</p>`, privacyText: `<h2>Privacy Policy</h2><p>Contact: faluzodiop@gmail.com</p>`},
-    wo: {title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité", darkMode: "Lëndëm", language: "Làkk", appTitle: "Soskat", prompt: "Waxal nataal wala vidéo bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon", realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D", stdRes: "Qualité bi", hdRes: "Qualité kawe", generate: "Sossal", download: "Jox", resultHere: "Résultat bi dina feeñ fii", generating: "Dinañu ko defar... 30-60s", emptyAlert: "Binde bu baax bi", modeImage: "Nataal", modeVideo: "Vidéo", aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal ak vidéo.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`}
+    fr: {title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité", darkMode: "Mode sombre", language: "Langue", appTitle: "Générateur", prompt: "Décris l'image, vidéo ou pose une question...", negative: "À exclure: texte, flou, basse qualité", realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D", stdRes: "Résolution standard", hdRes: "Haute résolution", generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici", generating: "Génération en cours... 30-60s pour la vidéo", emptyAlert: "Écris une description d'abord", modeImage: "Image", modeVideo: "Vidéo", aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`},
+    en: {title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy", darkMode: "Dark mode", language: "Language", appTitle: "Generator", prompt: "Describe the image, video or ask a question...", negative: "Exclude: text, blur, low quality", realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D", stdRes: "Standard resolution", hdRes: "High resolution", generate: "Generate", download: "Download", resultHere: "Result will appear here", generating: "Generating... 30-60s for video", emptyAlert: "Write a description first", modeImage: "Image", modeVideo: "Video", aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI.</p>`, privacyText: `<h2>Privacy Policy</h2><p>Contact: faluzodiop@gmail.com</p>`},
+    wo: {title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité", darkMode: "Lëndëm", language: "Làkk", appTitle: "Soskat", prompt: "Waxal nataal, vidéo wala laaj...", negative: "Wara baña: bind, xel, qualité bu bon", realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D", stdRes: "Qualité bi", hdRes: "Qualité kawe", generate: "Sossal", download: "Jox", resultHere: "Résultat bi dina feeñ fii", generating: "Dinañu ko defar... 30-60s", emptyAlert: "Binde bu baax bi", modeImage: "Nataal", modeVideo: "Vidéo", aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal ak vidéo.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`}
 };
 
 function setLanguage(lang){ document.documentElement.lang = lang; localStorage.setItem('lang', lang); document.querySelectorAll('[data-i18n]').forEach(el => { if(translations[lang][el.dataset.i18n]) el.textContent = translations[lang][el.dataset.i18n]; }); document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(translations[lang][el.dataset.i18nPlaceholder]) el.placeholder = translations[lang][el.dataset.i18nPlaceholder]; }); }
@@ -107,7 +108,7 @@ langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// SEULE FONCTION MODIFIEE : VIDEO 100%
+// SEULE FONCTION MODIFIEE : AJOUT TEXTE
 function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
@@ -123,21 +124,44 @@ function generer() {
     lastMode = mode;
     result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
 
+    if(mode === "text"){
+        genererTexte(prompt, result);
+        return;
+    }
+
     let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
 
     if(mode === "video"){
-        // API VIDEO STABLE 100%
         let videoUrl = `https://api.pollinations.ai/video/${encodeURIComponent(fullPrompt)}`;
         lastImageUrl = videoUrl;
         result.innerHTML = `<video src="${videoUrl}" controls autoplay loop playsinline style="max-width:100%; border-radius:8px;"></video>`;
     } else {
-        // IMAGE NE BOUGE PAS
         let mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
         lastImageUrl = mediaUrl;
         let img = new Image();
         img.src = mediaUrl;
         img.onload = () => { result.innerHTML = `<img src="${mediaUrl}">`; }
         img.onerror = () => { result.innerHTML = `<p style="color:red">Erreur. Réessaie.</p>`; }
+    }
+}
+
+// NOUVELLE FONCTION POUR LE TEXTE AVEC CLE CACHEE
+async function genererTexte(prompt, result) {
+    try {
+        const response = await fetch('/.netlify/functions/pollinations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: "openai",
+                messages: [{ role: "user", content: prompt }]
+            })
+        })
+
+        const data = await response.json()
+        result.innerHTML = `<div class="page-content"><p>${data.choices[0].message.content}</p></div>`;
+
+    } catch(e) {
+        result.innerHTML = `<p style="color:red">Erreur: ${e.message}</p>`;
     }
 }
 
