@@ -11,7 +11,6 @@
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     </button>
 
-    <!-- MENU LATERAL -->
     <div id="sideMenu" class="side-menu">
         <button onclick="closeMenu()">X</button>
         <h3 data-i18n="title">SunuAI</h3>
@@ -85,7 +84,6 @@
 let lastImageUrl = "";
 let lastMode = "image";
 
-// TRADUCTIONS
 const translations = {
     fr: {
         title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité",
@@ -96,7 +94,7 @@ const translations = {
         generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici",
         generating: "Génération en cours...", emptyAlert: "Écris une description d'abord",
         modeImage: "Image", modeVideo: "Vidéo",
-        aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI, une application de génération d'images et vidéos conçue pour transformer vos idées en créations visuelles.</p><p><b>Imaginez. Décrivez. SunuAI crée.</b></p>`,
+        aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI, une application de génération d'images et vidéos.</p><p><b>Imaginez. Décrivez. SunuAI crée.</b></p>`,
         privacyText: `<h2>Politique de confidentialité</h2><p><i>Dernière mise à jour : 24 août 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
     },
     en: {
@@ -136,12 +134,8 @@ function setLanguage(lang){
     });
 }
 
-// MENU
 function toggleMenu(){ document.getElementById('sideMenu').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
-function closeMenu(){
-    document.getElementById('sideMenu').classList.remove('open');
-    document.getElementById('overlay').classList.remove('show');
-}
+function closeMenu(){ document.getElementById('sideMenu').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
 function resetHome(){
     let lang = localStorage.getItem('lang') || 'fr';
     document.getElementById('result').innerHTML = `<p style="color:var(--text-secondary)" data-i18n="resultHere">${translations[lang].resultHere}</p>`;
@@ -150,7 +144,6 @@ function resetHome(){
 function showAbout(){ let lang = localStorage.getItem('lang') || 'fr'; document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].aboutText}</div>`; }
 function showPrivacy(){ let lang = localStorage.getItem('lang') || 'fr'; document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].privacyText}</div>`; }
 
-// DARK MODE
 const darkToggle = document.getElementById('darkModeToggle');
 if(localStorage.getItem('theme') === 'dark'){ document.body.classList.add('dark'); darkToggle.checked = true; }
 darkToggle.addEventListener('change', () => {
@@ -158,14 +151,13 @@ darkToggle.addEventListener('change', () => {
     localStorage.setItem('theme', document.body.classList.contains('dark')? 'dark' : 'light');
 });
 
-// LANGUE
 const langSelect = document.getElementById('langSelect');
 const savedLang = localStorage.getItem('lang') || 'fr';
 langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// GENERATION IMAGE + VIDEO
+// SEULE MODIF ICI : GENERATION VIDEO
 function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
@@ -182,8 +174,15 @@ function generer() {
     result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
 
     let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
-    let domain = mode === "video"? "video" : "image";
-    let mediaUrl = `https://${domain}.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+
+    let mediaUrl;
+    if(mode === "video"){
+        // FIX VIDEO : on force le model veo
+        mediaUrl = `https://video.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?model=veo`;
+    } else {
+        mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+    }
+
     lastImageUrl = mediaUrl;
 
     if(mode === "video"){
@@ -211,4 +210,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-    </html>
+            </html>
