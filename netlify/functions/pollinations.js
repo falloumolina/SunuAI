@@ -3,22 +3,18 @@ exports.handler = async (event) => {
     const { prompt, type } = JSON.parse(event.body);
 
     if (type === 'text') {
-      // Version publique sans clé
-      const response = await fetch('https://text.pollinations.ai/', {
+      // API Texte Pollinations 100% gratuite sans clé
+      const response = await fetch('https://text.pollinations.ai/openai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          model: "openai-large", // modèle gratuit
           messages: [{ role: "user", content: prompt }],
-          model: "openai"
+          seed: Math.floor(Math.random() * 1000000) // pour avoir des réponses différentes
         })
       });
       
       const data = await response.json();
-      console.log("Réponse API:", data);
-
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
 
       return {
         statusCode: 200,
@@ -28,7 +24,7 @@ exports.handler = async (event) => {
     }
 
     if (type === 'image') {
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&nologo=true`;
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&nologo=true&width=1024&height=1024`;
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const base64 = Buffer.from(await blob.arrayBuffer()).toString('base64');
