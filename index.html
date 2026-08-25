@@ -108,8 +108,8 @@ langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// SEULE FONCTION MODIFIEE : AJOUT TEXTE
-function generer() {
+// FONCTION PRINCIPALE CORRIGEE POUR GITHUB PAGES
+async function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
     let mode = document.getElementById("mode").value;
@@ -125,7 +125,7 @@ function generer() {
     result.innerHTML = `<div class="loader"></div><p>${translations[lang].generating}</p>`;
 
     if(mode === "text"){
-        genererTexte(prompt, result);
+        await genererTexte(prompt, result, lang); // CORRIGE ICI
         return;
     }
 
@@ -136,28 +136,35 @@ function generer() {
         lastImageUrl = videoUrl;
         result.innerHTML = `<video src="${videoUrl}" controls autoplay loop playsinline style="max-width:100%; border-radius:8px;"></video>`;
     } else {
-        let mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+        let [w,h] = format.split('x');
+        let mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&model=flux&nologo=true`;
         lastImageUrl = mediaUrl;
         let img = new Image();
         img.src = mediaUrl;
-        img.onload = () => { result.innerHTML = `<img src="${mediaUrl}">`; }
+        img.onload = () => { result.innerHTML = `<img src="${mediaUrl}" style="max-width:100%; border-radius:8px;">`; }
         img.onerror = () => { result.innerHTML = `<p style="color:red">Erreur. Réessaie.</p>`; }
     }
 }
 
-// NOUVELLE FONCTION POUR LE TEXTE AVEC CLE CACHEE
-async function genererTexte(prompt, result) {
+// FONCTION TEXTE CORRIGEE POUR GITHUB PAGES - 100% GRATUIT
+async function genererTexte(prompt, result, lang) {
     try {
-        const response = await fetch('/.netlify/functions/pollinations', {
+        const response = await fetch('https://text.pollinations.ai/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                model: "openai",
-                messages: [{ role: "user", content: prompt }]
+                messages: [{ role: "user", content: prompt }],
+                model: "openai-large" // gratuit illimité
             })
         })
 
         const data = await response.json()
+
+        if(!data.choices) {
+            result.innerHTML = `<p style="color:red">Erreur API: ${JSON.stringify(data)}</p>`;
+            return;
+        }
+
         result.innerHTML = `<div class="page-content"><p>${data.choices[0].message.content}</p></div>`;
 
     } catch(e) {
@@ -176,4 +183,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-    </html>
+            </html>
