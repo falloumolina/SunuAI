@@ -11,12 +11,6 @@
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     </button>
 
-    <button class="history-btn" onclick="toggleHistory()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-    </button>
-
     <!-- MENU LATERAL -->
     <div id="sideMenu" class="side-menu">
         <button onclick="closeMenu()">X</button>
@@ -149,10 +143,8 @@ function setLanguage(lang){
 
 // MENU
 function toggleMenu(){ document.getElementById('sideMenu').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
-function toggleHistory(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
 function closeMenu(){
     document.getElementById('sideMenu').classList.remove('open');
-    document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
 }
 function resetHome(){
@@ -201,33 +193,16 @@ function generer() {
 
     if(mode === "video"){
         result.innerHTML = `<video src="${mediaUrl}" controls autoplay loop style="max-width:100%; border-radius:8px;"></video>`;
-        ajouterHistorique(prompt + " [VIDÉO]", mediaUrl);
     } else {
         let img = new Image();
         img.src = mediaUrl;
         img.onload = () => {
             result.innerHTML = `<img src="${mediaUrl}">`;
-            ajouterHistorique(prompt, mediaUrl);
         }
         img.onerror = () => {
             result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
         }
     }
-}
-
-function ajouterHistorique(prompt, url) {
-    let history = document.getElementById("history");
-    let item = document.createElement('div');
-    item.className = 'history-item';
-    item.onclick = () => {
-        if(url.includes('video.pollinations')) {
-            document.getElementById('result').innerHTML = `<video src="${url}" controls autoplay loop style="max-width:100%; border-radius:8px;"></video>`;
-        } else {
-            document.getElementById('result').innerHTML = `<img src="${url}">`;
-        }
-    }
-    item.innerHTML = `<div style="width:50px;height:50px;background:var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;">${url.includes('video')?'VID':'IMG'}</div><div>${prompt.substring(0,40)}...</div>`;
-    history.prepend(item);
 }
 
 function telecharger() {
@@ -241,4 +216,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-    </html>
+                </html>
