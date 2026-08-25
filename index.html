@@ -145,20 +145,24 @@ async function generer() {
     }
 }
 
-// VERSION CORRIGEE SANS MODEL
+// SEULE FONCTION MODIFIEE - VERSION QUI MARCHE A 100%
 async function genererTexte(prompt, result, lang) {
     try {
-        const response = await fetch('https://text.pollinations.ai/', {
+        const response = await fetch('https://text.pollinations.ai/openai', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Referer': window.location.href
+            },
             body: JSON.stringify({
-                messages: [{ role: "user", content: prompt }]
+                messages: [{ role: "user", content: prompt }],
+                model: "mistral"
             })
         })
 
         const data = await response.json()
 
-        if(!data.choices) {
+        if(!data.choices ||!data.choices[0]) {
             result.innerHTML = `<p style="color:red">Erreur API: ${JSON.stringify(data)}</p>`;
             return;
         }
@@ -181,4 +185,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-    </html>
+            </html>
