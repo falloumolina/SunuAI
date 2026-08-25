@@ -1,42 +1,25 @@
 exports.handler = async (event) => {
-  console.log("Fonction appelée", event.httpMethod);
-
-  if (event.httpMethod!== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
-
   try {
     const { prompt, type } = JSON.parse(event.body);
-    const POLLINATIONS_KEY = process.env.POLLINATIONS_KEY;
-
-    console.log("Type:", type);
-    console.log("Key existe:",!!POLLINATIONS_KEY);
-
-    if (!POLLINATIONS_KEY) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'POLLINATIONS_KEY manquante' }) };
-    }
 
     if (type === 'text') {
-      const apiUrl = 'https://text.pollinations.ai/openai';
-      const body = {
-        model: "openai",
-        messages: [{ role: "user", content: prompt }]
-      };
-
-      const response = await fetch(apiUrl, {
+      // Version publique sans clé
+      const response = await fetch('https://text.pollinations.ai/', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${POLLINATIONS_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }],
+          model: "openai"
+        })
       });
+      
+      const data = await response.json();
+      console.log("Réponse API:", data);
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+      if (data.error) {
+        throw new Error(data.error.message);
       }
 
-      const data = await response.json();
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -45,21 +28,18 @@ exports.handler = async (event) => {
     }
 
     if (type === 'image') {
-      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&nologo=true`;
-      const response = await fetch(apiUrl);
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&nologo=true`;
+      const response = await fetch(imageUrl);
       const blob = await response.blob();
       const base64 = Buffer.from(await blob.arrayBuffer()).toString('base64');
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: `data:image/png;base64,${base64}` })
       };
     }
 
     return { statusCode: 400, body: JSON.stringify({ error: 'Type non supporté' }) };
-
   } catch (error) {
-    console.error(error);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
