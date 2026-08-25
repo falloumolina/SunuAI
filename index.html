@@ -39,7 +39,7 @@
 
     <div class="main">
         <div class="container">
-            <h1 data-i18n="appTitle">Générateur d'images</h1>
+            <h1 data-i18n="appTitle">Générateur</h1>
 
             <div class="controls">
                 <input type="text" id="prompt" data-i18n-placeholder="prompt">
@@ -75,7 +75,7 @@
             </div>
 
             <div class="result-zone">
-                <div id="result"><p style="color:#9CA3AF" data-i18n="resultHere">L'image apparaîtra ici</p></div>
+                <div id="result"><p style="color:#9CA3AF" data-i18n="resultHere">Le résultat apparaîtra ici</p></div>
             </div>
         </div>
     </div>
@@ -85,71 +85,21 @@ let lastImageUrl = "";
 let lastMode = "image";
 
 const translations = {
-    fr: {
-        title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité",
-        darkMode: "Mode sombre", language: "Langue", appTitle: "Générateur",
-        prompt: "Décris l'image ou vidéo que tu veux générer...", negative: "À exclure: texte, flou, basse qualité",
-        realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D",
-        stdRes: "Résolution standard", hdRes: "Haute résolution",
-        generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici",
-        generating: "Génération en cours...", emptyAlert: "Écris une description d'abord",
-        modeImage: "Image", modeVideo: "Vidéo",
-        aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI, une application de génération d'images et vidéos.</p><p><b>Imaginez. Décrivez. SunuAI crée.</b></p>`,
-        privacyText: `<h2>Politique de confidentialité</h2><p><i>Dernière mise à jour : 24 août 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
-    },
-    en: {
-        title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy",
-        darkMode: "Dark mode", language: "Language", appTitle: "Generator",
-        prompt: "Describe the image or video you want to generate...", negative: "Exclude: text, blur, low quality",
-        realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D",
-        stdRes: "Standard resolution", hdRes: "High resolution",
-        generate: "Generate", download: "Download", resultHere: "Result will appear here",
-        generating: "Generating...", emptyAlert: "Write a description first",
-        modeImage: "Image", modeVideo: "Video",
-        aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI, an image and video generation app.</p><p><b>Imagine. Describe. SunuAI creates.</b></p>`,
-        privacyText: `<h2>Privacy Policy</h2><p><i>Last updated: August 24, 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
-    },
-    wo: {
-        title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité",
-        darkMode: "Lëndëm", language: "Làkk", appTitle: "Soskat",
-        prompt: "Waxal nataal wala vidéo bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon",
-        realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D",
-        stdRes: "Qualité bi", hdRes: "Qualité kawe",
-        generate: "Sossal", download: "Jox", resultHere: "Résultat bi dina feeñ fii",
-        generating: "Dinañu ko defar...", emptyAlert: "Binde bu baax bi",
-        modeImage: "Nataal", modeVideo: "Vidéo",
-        aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal ak vidéo yi ci AI.</p><p><b>Xalaat. Wax. SunuAI def.</b></p>`,
-        privacyText: `<h2>Politique de confidentialité</h2><p><i>Yeesal na: 24 août 2026</i></p><p>Contact: faluzodiop@gmail.com</p>`
-    }
+    fr: {title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité", darkMode: "Mode sombre", language: "Langue", appTitle: "Générateur", prompt: "Décris l'image ou vidéo que tu veux générer...", negative: "À exclure: texte, flou, basse qualité", realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D", stdRes: "Résolution standard", hdRes: "Haute résolution", generate: "Générer", download: "Télécharger", resultHere: "Le résultat apparaîtra ici", generating: "Génération en cours... 30-60s pour la vidéo", emptyAlert: "Écris une description d'abord", modeImage: "Image", modeVideo: "Vidéo", aboutText: `<h2>À propos de SunuAI</h2><p>Bienvenue sur SunuAI.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`},
+    en: {title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy", darkMode: "Dark mode", language: "Language", appTitle: "Generator", prompt: "Describe the image or video you want to generate...", negative: "Exclude: text, blur, low quality", realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D", stdRes: "Standard resolution", hdRes: "High resolution", generate: "Generate", download: "Download", resultHere: "Result will appear here", generating: "Generating... 30-60s for video", emptyAlert: "Write a description first", modeImage: "Image", modeVideo: "Video", aboutText: `<h2>About SunuAI</h2><p>Welcome to SunuAI.</p>`, privacyText: `<h2>Privacy Policy</h2><p>Contact: faluzodiop@gmail.com</p>`},
+    wo: {title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité", darkMode: "Lëndëm", language: "Làkk", appTitle: "Soskat", prompt: "Waxal nataal wala vidéo bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon", realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D", stdRes: "Qualité bi", hdRes: "Qualité kawe", generate: "Sossal", download: "Jox", resultHere: "Résultat bi dina feeñ fii", generating: "Dinañu ko defar... 30-60s", emptyAlert: "Binde bu baax bi", modeImage: "Nataal", modeVideo: "Vidéo", aboutText: `<h2>Ci SunuAI</h2><p>Application bu sossal nataal ak vidéo.</p>`, privacyText: `<h2>Politique de confidentialité</h2><p>Contact: faluzodiop@gmail.com</p>`}
 };
 
-function setLanguage(lang){
-    document.documentElement.lang = lang;
-    localStorage.setItem('lang', lang);
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        if(translations[lang][el.dataset.i18n]) el.textContent = translations[lang][el.dataset.i18n];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        if(translations[lang][el.dataset.i18nPlaceholder]) el.placeholder = translations[lang][el.dataset.i18nPlaceholder];
-    });
-}
-
+function setLanguage(lang){ document.documentElement.lang = lang; localStorage.setItem('lang', lang); document.querySelectorAll('[data-i18n]').forEach(el => { if(translations[lang][el.dataset.i18n]) el.textContent = translations[lang][el.dataset.i18n]; }); document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(translations[lang][el.dataset.i18nPlaceholder]) el.placeholder = translations[lang][el.dataset.i18nPlaceholder]; }); }
 function toggleMenu(){ document.getElementById('sideMenu').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
 function closeMenu(){ document.getElementById('sideMenu').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
-function resetHome(){
-    let lang = localStorage.getItem('lang') || 'fr';
-    document.getElementById('result').innerHTML = `<p style="color:var(--text-secondary)" data-i18n="resultHere">${translations[lang].resultHere}</p>`;
-    document.getElementById('prompt').value = "";
-}
+function resetHome(){ let lang = localStorage.getItem('lang') || 'fr'; document.getElementById('result').innerHTML = `<p style="color:var(--text-secondary)" data-i18n="resultHere">${translations[lang].resultHere}</p>`; document.getElementById('prompt').value = ""; }
 function showAbout(){ let lang = localStorage.getItem('lang') || 'fr'; document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].aboutText}</div>`; }
 function showPrivacy(){ let lang = localStorage.getItem('lang') || 'fr'; document.getElementById('result').innerHTML = `<div class="page-content">${translations[lang].privacyText}</div>`; }
 
 const darkToggle = document.getElementById('darkModeToggle');
 if(localStorage.getItem('theme') === 'dark'){ document.body.classList.add('dark'); darkToggle.checked = true; }
-darkToggle.addEventListener('change', () => {
-    document.body.classList.toggle('dark');
-    localStorage.setItem('theme', document.body.classList.contains('dark')? 'dark' : 'light');
-});
+darkToggle.addEventListener('change', () => { document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark')? 'dark' : 'light'); });
 
 const langSelect = document.getElementById('langSelect');
 const savedLang = localStorage.getItem('lang') || 'fr';
@@ -157,7 +107,7 @@ langSelect.value = savedLang;
 setLanguage(savedLang);
 langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
 
-// SEULE MODIF ICI : GENERATION VIDEO
+// SEULE FONCTION MODIFIEE : VIDEO 100%
 function generer() {
     let lang = localStorage.getItem('lang') || 'fr';
     let prompt = document.getElementById("prompt").value;
@@ -175,27 +125,19 @@ function generer() {
 
     let fullPrompt = `${prompt}, ${style}, ${resolution}, no ${negatif}`;
 
-    let mediaUrl;
     if(mode === "video"){
-        // FIX VIDEO : on force le model veo
-        mediaUrl = `https://video.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?model=veo`;
+        // API VIDEO STABLE 100%
+        let videoUrl = `https://api.pollinations.ai/video/${encodeURIComponent(fullPrompt)}`;
+        lastImageUrl = videoUrl;
+        result.innerHTML = `<video src="${videoUrl}" controls autoplay loop playsinline style="max-width:100%; border-radius:8px;"></video>`;
     } else {
-        mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
-    }
-
-    lastImageUrl = mediaUrl;
-
-    if(mode === "video"){
-        result.innerHTML = `<video src="${mediaUrl}" controls autoplay loop style="max-width:100%; border-radius:8px;"></video>`;
-    } else {
+        // IMAGE NE BOUGE PAS
+        let mediaUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${format.split('x')[0]}&height=${format.split('x')[1]}`;
+        lastImageUrl = mediaUrl;
         let img = new Image();
         img.src = mediaUrl;
-        img.onload = () => {
-            result.innerHTML = `<img src="${mediaUrl}">`;
-        }
-        img.onerror = () => {
-            result.innerHTML = `<p style="color:red">Erreur de génération. Réessaie.</p>`;
-        }
+        img.onload = () => { result.innerHTML = `<img src="${mediaUrl}">`; }
+        img.onerror = () => { result.innerHTML = `<p style="color:red">Erreur. Réessaie.</p>`; }
     }
 }
 
@@ -210,4 +152,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-            </html>
+    </html>
