@@ -38,11 +38,6 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-    <div class="sidebar" id="sidebar">
-        <h3 data-i18n="history">HISTORIQUE</h3>
-        <div id="history"></div>
-    </div>
-
     <div class="main">
         <div class="container">
             <h1 data-i18n="appTitle">Générateur d'images</h1>
@@ -94,7 +89,7 @@ let lastMode = "image";
 const translations = {
     fr: {
         title: "SunuAI", newChat: "Nouvelle génération", about: "À propos", privacy: "Politique de confidentialité",
-        darkMode: "Mode sombre", language: "Langue", history: "HISTORIQUE", appTitle: "Générateur",
+        darkMode: "Mode sombre", language: "Langue", appTitle: "Générateur",
         prompt: "Décris l'image ou vidéo que tu veux générer...", negative: "À exclure: texte, flou, basse qualité",
         realistic: "Réaliste", anime: "Anime", painting: "Peinture", render3d: "3D",
         stdRes: "Résolution standard", hdRes: "Haute résolution",
@@ -106,7 +101,7 @@ const translations = {
     },
     en: {
         title: "SunuAI", newChat: "New generation", about: "About", privacy: "Privacy Policy",
-        darkMode: "Dark mode", language: "Language", history: "HISTORY", appTitle: "Generator",
+        darkMode: "Dark mode", language: "Language", appTitle: "Generator",
         prompt: "Describe the image or video you want to generate...", negative: "Exclude: text, blur, low quality",
         realistic: "Realistic", anime: "Anime", painting: "Painting", render3d: "3D",
         stdRes: "Standard resolution", hdRes: "High resolution",
@@ -118,7 +113,7 @@ const translations = {
     },
     wo: {
         title: "SunuAI", newChat: "Dañu sosal bu bees", about: "Ci SunuAI", privacy: "Politique de confidentialité",
-        darkMode: "Lëndëm", language: "Làkk", history: "TARIixa", appTitle: "Soskat",
+        darkMode: "Lëndëm", language: "Làkk", appTitle: "Soskat",
         prompt: "Waxal nataal wala vidéo bi nga bëgg...", negative: "Wara baña: bind, xel, qualité bu bon",
         realistic: "Ku nekk", anime: "Anime", painting: "Lekkal", render3d: "3D",
         stdRes: "Qualité bi", hdRes: "Qualité kawe",
@@ -216,4 +211,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-                </html>
+    </html>
