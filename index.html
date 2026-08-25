@@ -11,6 +11,12 @@
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     </button>
 
+    <button class="history-btn" onclick="toggleHistory()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+    </button>
+
     <!-- MENU LATERAL -->
     <div id="sideMenu" class="side-menu">
         <button onclick="closeMenu()">X</button>
@@ -38,7 +44,7 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <h3 data-i18n="history">HISTORIQUE</h3>
         <div id="history"></div>
     </div>
@@ -51,7 +57,6 @@
                 <input type="text" id="prompt" data-i18n-placeholder="prompt">
 
                 <div class="options">
-                    <!-- NOUVEAU TOGGLE ICI -->
                     <select id="mode">
                         <option value="image" data-i18n="modeImage">Image</option>
                         <option value="video" data-i18n="modeVideo">Vidéo</option>
@@ -144,7 +149,12 @@ function setLanguage(lang){
 
 // MENU
 function toggleMenu(){ document.getElementById('sideMenu').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
-function closeMenu(){ document.getElementById('sideMenu').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+function toggleHistory(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+function closeMenu(){
+    document.getElementById('sideMenu').classList.remove('open');
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+}
 function resetHome(){
     let lang = localStorage.getItem('lang') || 'fr';
     document.getElementById('result').innerHTML = `<p style="color:var(--text-secondary)" data-i18n="resultHere">${translations[lang].resultHere}</p>`;
@@ -231,4 +241,4 @@ function telecharger() {
 document.getElementById('prompt').addEventListener("keypress", function(e) { if (e.key === "Enter") generer(); });
 </script>
 </body>
-            </html>
+    </html>
